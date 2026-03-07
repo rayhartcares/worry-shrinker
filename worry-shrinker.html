@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worry Shrinker Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #e8f4fd;
+    --sky-mid: #c5e3f7;
+    --blue: #4a90d9;
+    --blue-dark: #2d6fa8;
+    --teal: #3dbda7;
+    --teal-dark: #2a9a87;
+    --warm: #f7f3ee;
+    --warm-mid: #ede5d8;
+    --amber: #e8a84c;
+    --amber-dark: #c8882c;
+    --soft-red: #e07070;
+    --green: #5bb87a;
+    --green-dark: #3a9659;
+    --text: #2a2a35;
+    --text-mid: #5a5a6a;
+    --text-light: #8a8a9a;
+    --white: #ffffff;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(160deg, #e8f4fd 0%, #f7f3ee 50%, #e8f7f2 100%);
+    min-height: 100vh;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; padding: 24px 20px 40px; max-width: 560px; margin: 0 auto; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── HEADER ── */
+  .app-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 32px;
+  }
+  .app-logo {
+    font-size: 13px; font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--blue-dark); opacity: 0.7;
+  }
+  .step-indicator {
+    font-size: 12px; color: var(--text-light); font-weight: 600;
+  }
+  .back-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 13px; color: var(--text-mid); font-family: 'Nunito', sans-serif;
+    font-weight: 600; padding: 4px 0; display: flex; align-items: center; gap: 4px;
+  }
+  .back-btn:hover { color: var(--blue); }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  .card-accent {
+    border-left: 4px solid var(--teal);
+  }
+  .card-warm {
+    background: var(--warm);
+    border: 1px solid var(--warm-mid);
+    box-shadow: none;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .screen-title {
+    font-family: 'Lora', serif;
+    font-size: 26px; font-weight: 600;
+    color: var(--text); line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .screen-subtitle {
+    font-size: 15px; color: var(--text-mid);
+    margin-bottom: 28px; line-height: 1.6;
+  }
+  .section-label {
+    font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-light);
+    margin-bottom: 12px;
+  }
+  .helper-text {
+    font-size: 13px; color: var(--text-light);
+    font-style: italic; margin-top: 8px;
+  }
+
+  /* ── WORRY INPUT ── */
+  .worry-textarea {
+    width: 100%; border: 2px solid var(--sky-mid);
+    border-radius: var(--radius-sm); padding: 16px;
+    font-family: 'Nunito', sans-serif; font-size: 16px;
+    color: var(--text); background: var(--white);
+    resize: none; min-height: 120px;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+  .worry-textarea:focus {
+    outline: none; border-color: var(--blue);
+  }
+  .worry-textarea::placeholder { color: var(--text-light); }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    width: 100%; padding: 16px 24px;
+    background: var(--blue); color: var(--white);
+    border: none; border-radius: var(--radius-sm);
+    font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: background 0.2s, transform 0.1s;
+    margin-top: 8px;
+  }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { background: #ccc; cursor: default; }
+
+  .btn-secondary {
+    width: 100%; padding: 14px 24px;
+    background: transparent; color: var(--blue);
+    border: 2px solid var(--blue); border-radius: var(--radius-sm);
+    font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; margin-top: 8px;
+  }
+  .btn-secondary:hover { background: var(--sky); }
+
+  .btn-teal {
+    background: var(--teal); 
+  }
+  .btn-teal:hover { background: var(--teal-dark); }
+
+  .btn-amber {
+    background: var(--amber);
+  }
+  .btn-amber:hover { background: var(--amber-dark); }
+
+  .btn-green {
+    background: var(--green);
+  }
+  .btn-green:hover { background: var(--green-dark); }
+
+  .btn-row {
+    display: flex; gap: 10px; margin-top: 8px;
+  }
+  .btn-row .btn-primary { margin-top: 0; }
+  .btn-row .btn-secondary { margin-top: 0; }
+
+  /* ── SCALE SLIDER ── */
+  .scale-container { margin: 16px 0; }
+  .scale-labels {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--text-light); margin-bottom: 8px;
+  }
+  .scale-input {
+    width: 100%; -webkit-appearance: none;
+    height: 8px; border-radius: 4px;
+    background: linear-gradient(to right, var(--green), var(--amber), var(--soft-red));
+    outline: none;
+  }
+  .scale-input::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 28px; height: 28px;
+    border-radius: 50%; background: var(--white);
+    border: 3px solid var(--blue); cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .scale-value {
+    text-align: center; font-size: 32px; font-weight: 800;
+    color: var(--blue); margin-top: 12px;
+  }
+  .scale-feeling {
+    text-align: center; font-size: 14px;
+    color: var(--text-mid); margin-top: 4px;
+  }
+
+  /* ── BODY MAP ── */
+  .body-map-container {
+    display: flex; flex-direction: column; align-items: center;
+    margin: 16px 0;
+  }
+  .body-svg { width: 160px; height: 280px; }
+  .body-part {
+    cursor: pointer; transition: fill 0.2s;
+    fill: var(--sky-mid);
+    stroke: var(--blue); stroke-width: 1.5;
+  }
+  .body-part:hover { fill: var(--sky); }
+  .body-part.selected { fill: var(--amber) !important; stroke: var(--amber-dark); }
+  .body-parts-list {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center; margin-top: 16px;
+  }
+  .body-tag {
+    padding: 6px 14px; border-radius: 20px;
+    background: var(--sky); border: 2px solid var(--sky-mid);
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; color: var(--text-mid);
+  }
+  .body-tag.selected {
+    background: var(--amber); border-color: var(--amber-dark);
+    color: var(--white);
+  }
+
+  /* ── CBT THOUGHT CHECKER ── */
+  .thought-trap {
+    padding: 14px 16px; border-radius: var(--radius-sm);
+    background: var(--sky); border: 1px solid var(--sky-mid);
+    margin-bottom: 10px; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: flex-start; gap: 12px;
+  }
+  .thought-trap:hover { background: var(--sky-mid); }
+  .thought-trap.selected {
+    background: #fff3cd; border-color: var(--amber);
+  }
+  .trap-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+  .trap-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .trap-desc { font-size: 12px; color: var(--text-mid); margin-top: 2px; }
+  .trap-check {
+    margin-left: auto; width: 22px; height: 22px;
+    border-radius: 50%; border: 2px solid var(--sky-mid);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: transparent; transition: all 0.2s;
+  }
+  .thought-trap.selected .trap-check {
+    background: var(--amber); border-color: var(--amber-dark); color: white;
+  }
+
+  /* ── BREATHING ANIMATION ── */
+  .breathing-container {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 24px 0;
+  }
+  .breathing-circle {
+    width: 140px; height: 140px; border-radius: 50%;
+    background: radial-gradient(circle, var(--sky-mid), var(--blue) 70%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: var(--white);
+    text-align: center; cursor: pointer;
+    box-shadow: 0 0 0 0 rgba(74,144,217,0.4);
+    transition: transform 0.1s;
+    position: relative;
+  }
+  .breathing-circle.inhale {
+    animation: breatheIn 4s ease-in-out forwards;
+  }
+  .breathing-circle.hold {
+    animation: holdBreath 4s ease-in-out forwards;
+  }
+  .breathing-circle.exhale {
+    animation: breatheOut 4s ease-in-out forwards;
+  }
+  @keyframes breatheIn {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74,144,217,0.4); }
+    100% { transform: scale(1.4); box-shadow: 0 0 0 30px rgba(74,144,217,0); }
+  }
+  @keyframes holdBreath {
+    0%, 100% { transform: scale(1.4); }
+  }
+  @keyframes breatheOut {
+    0% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+  .breath-instruction {
+    font-size: 22px; font-weight: 800; color: var(--blue);
+    margin-top: 20px; text-align: center; min-height: 36px;
+  }
+  .breath-counter {
+    font-size: 14px; color: var(--text-light); margin-top: 8px;
+  }
+  .breath-dots {
+    display: flex; gap: 8px; margin-top: 16px;
+  }
+  .breath-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--sky-mid); transition: background 0.3s;
+  }
+  .breath-dot.done { background: var(--teal); }
+
+  /* ── WORRY TIME SCHEDULER ── */
+  .time-options {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin: 16px 0;
+  }
+  .time-option {
+    padding: 14px 12px; border-radius: var(--radius-sm);
+    border: 2px solid var(--sky-mid); background: var(--white);
+    text-align: center; cursor: pointer; transition: all 0.2s;
+  }
+  .time-option:hover { border-color: var(--blue); background: var(--sky); }
+  .time-option.selected { border-color: var(--blue); background: var(--sky); }
+  .time-option .time-val { font-size: 20px; font-weight: 800; color: var(--blue); }
+  .time-option .time-label { font-size: 12px; color: var(--text-mid); margin-top: 2px; }
+
+  /* ── REFRAME TOOL ── */
+  .reframe-input {
+    width: 100%; border: 2px solid var(--sky-mid);
+    border-radius: var(--radius-sm); padding: 14px 16px;
+    font-family: 'Nunito', sans-serif; font-size: 15px;
+    color: var(--text); background: var(--white);
+    resize: none; min-height: 90px;
+    transition: border-color 0.2s; line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .reframe-input:focus { outline: none; border-color: var(--teal); }
+
+  .reframe-prompt {
+    padding: 16px; border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--sky) 0%, #e8f7f2 100%);
+    border-left: 3px solid var(--teal);
+    margin-bottom: 12px;
+  }
+  .reframe-prompt p {
+    font-size: 14px; color: var(--text-mid); line-height: 1.6;
+  }
+  .reframe-prompt strong { color: var(--teal-dark); }
+
+  /* ── SUMMARY ── */
+  .summary-worry {
+    font-family: 'Lora', serif; font-size: 16px;
+    font-style: italic; color: var(--text-mid);
+    padding: 16px; background: var(--warm);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--warm-mid);
+    margin-bottom: 20px; line-height: 1.7;
+  }
+
+  .summary-row {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid var(--warm-mid);
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-icon { font-size: 22px; flex-shrink: 0; }
+  .summary-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-light); }
+  .summary-val { font-size: 14px; color: var(--text); margin-top: 3px; line-height: 1.5; }
+
+  .score-change {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px; background: var(--sky);
+    border-radius: var(--radius-sm); margin: 20px 0;
+    justify-content: center;
+  }
+  .score-box {
+    text-align: center;
+  }
+  .score-num { font-size: 36px; font-weight: 800; }
+  .score-num.before { color: var(--soft-red); }
+  .score-num.after { color: var(--green); }
+  .score-lbl { font-size: 11px; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+  .score-arrow { font-size: 28px; color: var(--text-light); }
+
+  .affirmation {
+    text-align: center; padding: 24px 20px;
+    background: linear-gradient(135deg, #e8f7f2, var(--sky));
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+  }
+  .affirmation .emoji { font-size: 40px; margin-bottom: 12px; }
+  .affirmation p {
+    font-family: 'Lora', serif; font-size: 17px;
+    color: var(--text); line-height: 1.6; font-style: italic;
+  }
+
+  /* ── WORRY TIME BOX ── */
+  .worrytime-box {
+    background: linear-gradient(135deg, #fff8e8, #fff3cd);
+    border: 2px solid var(--amber);
+    border-radius: var(--radius); padding: 20px 18px;
+    margin-bottom: 16px;
+  }
+  .worrytime-title {
+    font-size: 14px; font-weight: 800; color: var(--amber-dark);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;
+  }
+  .worrytime-time {
+    font-size: 22px; font-weight: 800; color: var(--text);
+  }
+  .worrytime-note {
+    font-size: 13px; color: var(--text-mid); margin-top: 6px; line-height: 1.5;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    height: 4px; background: var(--sky-mid);
+    border-radius: 2px; margin-bottom: 28px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(to right, var(--teal), var(--blue));
+    border-radius: 2px; transition: width 0.4s ease;
+  }
+
+  /* ── WELCOME ── */
+  .welcome-hero {
+    text-align: center; padding: 32px 0 24px;
+  }
+  .welcome-emoji { font-size: 64px; margin-bottom: 16px; display: block; }
+  .welcome-title {
+    font-family: 'Lora', serif; font-size: 30px; font-weight: 600;
+    color: var(--text); margin-bottom: 10px; line-height: 1.3;
+  }
+  .welcome-sub {
+    font-size: 16px; color: var(--text-mid); line-height: 1.6;
+    max-width: 340px; margin: 0 auto 32px;
+  }
+  .feature-list {
+    list-style: none; text-align: left; margin-bottom: 32px;
+  }
+  .feature-list li {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--warm-mid);
+    font-size: 14px; color: var(--text-mid);
+  }
+  .feature-list li:last-child { border-bottom: none; }
+  .feature-list .f-icon { font-size: 20px; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .screen.active { animation: fadeIn 0.3s ease; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 400px) {
+    .screen-title { font-size: 22px; }
+    .time-options { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     SCREEN 0: WELCOME
+════════════════════════════════════════ -->
+<div class="screen active" id="screen-welcome">
+  <div class="app-header">
+    <span class="app-logo">Brave Feelings Lab</span>
+  </div>
+  <div class="welcome-hero">
+    <span class="welcome-emoji">🧪</span>
+    <h1 class="welcome-title">Worry Shrinker Lab</h1>
+    <p class="welcome-sub">A safe place to look at your worry, understand it, and make it smaller.</p>
+  </div>
+  <ul class="feature-list">
+    <li><span class="f-icon">🧠</span> Name and examine your worry</li>
+    <li><span class="f-icon">🫁</span> Calm your body with breathing</li>
+    <li><span class="f-icon">🔍</span> Check your thinking patterns</li>
+    <li><span class="f-icon">💬</span> Talk back to the worry</li>
+    <li><span class="f-icon">⏰</span> Schedule a Worry Time</li>
+  </ul>
+  <button class="btn-primary" onclick="goTo('screen-worry-name')">Start — I have a worry</button>
+  <button class="btn-secondary" onclick="goTo('screen-breathe-only')">Just help me breathe</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 1: NAME THE WORRY
+════════════════════════════════════════ -->
+<div class="screen" id="screen-worry-name">
+  <div class="app-header">
+    <button class="back-btn" onclick="goTo('screen-welcome')">← Back</button>
+    <span class="step-indicator">Step 1 of 6</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:16%"></div></div>
+
+  <h1 class="screen-title">What is your worry?</h1>
+  <p class="screen-subtitle">Write it down. Getting it out of your head and onto the screen makes it easier to look at.</p>
+
+  <div class="card">
+    <div class="section-label">My worry is...</div>
+    <textarea class="worry-textarea" id="worry-text" placeholder="Write your worry here. There are no wrong answers." rows="4"></textarea>
+    <p class="helper-text">Take your time. Even one sentence is enough.</p>
+  </div>
+
+  <button class="btn-primary" onclick="saveWorry()">That's my worry →</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 2: RATE THE WORRY
+════════════════════════════════════════ -->
+<div class="screen" id="screen-rate">
+  <div class="app-header">
+    <button class="back-btn" onclick="goTo('screen-worry-name')">← Back</button>
+    <span class="step-indicator">Step 2 of 6</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
+
+  <h1 class="screen-title">How big does it feel?</h1>
+  <p class="screen-subtitle">Rate your worry right now. There is no right or wrong number.</p>
+
+  <div class="card">
+    <div class="section-label">Worry size: 0 = tiny · 10 = huge</div>
+    <div class="scale-container">
+      <div class="scale-labels"><span>0 — Tiny</span><span>10 — Huge</span></div>
+      <input type="range" class="scale-input" id="worry-scale-before" min="0" max="10" value="5" oninput="updateScale('before')">
+      <div class="scale-value" id="scale-before-val">5</div>
+      <div class="scale-feeling" id="scale-before-feel">Medium — I notice it</div>
+    </div>
+  </div>
+
+  <div class="card card-warm">
+    <p style="font-size:14px; color:var(--text-mid); line-height:1.6;">
+      <strong>Why we rate worries:</strong> Giving a worry a number helps your brain see it as something you can measure — and shrink. We'll check this number again at the end.
+    </p>
+  </div>
+
+  <button class="btn-primary" onclick="saveRating()">Got it →</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 3: BODY CHECK (SOMATIC)
+════════════════════════════════════════ -->
+<div class="screen" id="screen-body">
+  <div class="app-header">
+    <button class="back-btn" onclick="goTo('screen-rate')">← Back</button>
+    <span class="step-indicator">Step 3 of 6</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+
+  <h1 class="screen-title">Where do you feel it?</h1>
+  <p class="screen-subtitle">Worries live in our bodies too. Tap all the places where you feel your worry right now.</p>
+
+  <div class="card">
+    <div class="body-parts-list" id="body-parts">
+      <div class="body-tag" data-part="head" onclick="toggleBodyPart(this)">🧠 Head</div>
+      <div class="body-tag" data-part="throat" onclick="toggleBodyPart(this)">😮 Throat</div>
+      <div class="body-tag" data-part="chest" onclick="toggleBodyPart(this)">💗 Chest</div>
+      <div class="body-tag" data-part="stomach" onclick="toggleBodyPart(this)">🫃 Stomach</div>
+      <div class="body-tag" data-part="arms" onclick="toggleBodyPart(this)">💪 Arms</div>
+      <div class="body-tag" data-part="hands" onclick="toggleBodyPart(this)">🤲 Hands</div>
+      <div class="body-tag" data-part="legs" onclick="toggleBodyPart(this)">🦵 Legs</div>
+      <div class="body-tag" data-part="feet" onclick="toggleBodyPart(this)">🦶 Feet</div>
+      <div class="body-tag" data-part="nowhere" onclick="toggleBodyPart(this)">🤷 Nowhere</div>
+    </div>
+  </div>
+
+  <div class="card card-warm" id="body-feedback" style="display:none;">
+    <p style="font-size:14px; color:var(--text-mid); line-height:1.6;" id="body-feedback-text"></p>
+  </div>
+
+  <button class="btn-primary btn-teal" onclick="goTo('screen-breathe')">Next: Calm your body →</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 4: BREATHING (MINDFULNESS)
+════════════════════════════════════════ -->
+<div class="screen" id="screen-breathe">
+  <div class="app-header">
+    <button class="back-btn" onclick="goTo('screen-body')">← Back</button>
+    <span class="step-indicator">Step 4 of 6</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
+
+  <h1 class="screen-title">Let's calm your body</h1>
+  <p class="screen-subtitle">Box breathing (4-4-4-4) is used by doctors, athletes, and the military to reset the nervous system in minutes.</p>
+
+  <div class="card">
+    <div class="breathing-container">
+      <div class="breathing-circle" id="breath-circle" onclick="startBreathing()">
+        <span id="breath-circle-text">Tap to<br>begin</span>
+      </div>
+      <div class="breath-instruction" id="breath-instruction">Tap the circle to start</div>
+      <div class="breath-counter" id="breath-counter">4 rounds · about 1 minute</div>
+      <div class="breath-dots" id="breath-dots">
+        <div class="breath-dot" id="dot-0"></div>
+        <div class="breath-dot" id="dot-1"></div>
+        <div class="breath-dot" id="dot-2"></div>
+        <div class="breath-dot" id="dot-3"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-warm">
+    <p style="font-size:13px; color:var(--text-mid); line-height:1.6;">
+      <strong>How it works:</strong> Slow breathing activates the parasympathetic nervous system — your body's natural calm switch. Even one round helps.
+    </p>
+  </div>
+
+  <button class="btn-primary btn-teal" id="breathe-next-btn" onclick="goTo('screen-cbt')" style="display:none;">I feel calmer →</button>
+  <button class="btn-secondary" onclick="goTo('screen-cbt')" style="margin-top:8px;">Skip breathing →</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 4b: BREATHE ONLY (shortcut)
+════════════════════════════════════════ -->
+<div class="screen" id="screen-breathe-only">
+  <div class="app-header">
+    <button class="back-btn" onclick="goTo('screen-welcome')">← Back</button>
+  </div>
+
+  <h1 class="screen-title">Box breathing</h1>
+  <p class="screen-subtitle">Inhale 4 · Hold 4 · Exhale 4 · Hold 4. Used by professionals to calm the nervous system fast.</p>
+
+  <div class="card">
+    <div class="breathing-container">
+      <div class="breathing-circle" id="breath-circle-2" onclick="startBreathing2()">
+        <span id="breath-circle-text-2">Tap to<br>begin</span>
+      </div>
+      <div class="breath-instruction" id="breath-instruction-2">Tap the circle to start</div>
+      <div class="breath-counter" id="breath-counter-2">4 rounds · about 1 minute</div>
+      <div class="breath-dots" id="breath-dots-2">
+        <div class="breath-dot" id="dot2-0"></div>
+        <div class="breath-dot" id="dot2-1"></div>
+        <div class="breath-dot" id="dot2-2"></div>
+        <div class="breath-dot" id="dot2-3"></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-primary btn-teal" onclick="goTo('screen-welcome')" style="margin-top:8px;">Done — go back</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 5: CBT THOUGHT CHECKER
+════════════════════════════════════════ -->
+<div class="screen" id="screen-cbt">
+  <div class="app-header">
+    <button class="back-btn" onclick="goTo('screen-breathe')">← Back</button>
+    <span class="step-indicator">Step 5 of 6</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:83%"></div></div>
+
+  <h1 class="screen-title">Check your thinking</h1>
+  <p class="screen-subtitle">Sometimes our brain plays tricks that make worries seem bigger. Tap any that sound like your worry right now.</p>
+
+  <div id="thought-traps">
+    <div class="thought-trap" onclick="toggleTrap(this)" data-trap="catastrophizing">
+      <span class="trap-icon">🌋</span>
+      <div>
+        <div class="trap-name">Catastrophizing</div>
+        <div class="trap-desc">"The worst thing will definitely happen."</div>
+      </div>
+      <div class="trap-check">✓</div>
+    </div>
+    <div class="thought-trap" onclick="toggleTrap(this)" data-trap="mind-reading">
+      <span class="trap-icon">🔮</span>
+      <div>
+        <div class="trap-name">Mind Reading</div>
+        <div class="trap-desc">"I know what others are thinking about me."</div>
+      </div>
+      <div class="trap-check">✓</div>
+    </div>
+    <div class="thought-trap" onclick="toggleTrap(this)" data-trap="all-or-nothing">
+      <span class="trap-icon">⚫⚪</span>
+      <div>
+        <div class="trap-name">All-or-Nothing</div>
+        <div class="trap-desc">"If it's not perfect, it's a total disaster."</div>
+      </div>
+      <div class="trap-check">✓</div>
+    </div>
+    <div class="thought-trap" onclick="toggleTrap(this)" data-trap="overgeneralizing">
+      <span class="trap-icon">♾️</span>
+      <div>
+        <div class="trap-name">Overgeneralizing</div>
+        <div class="trap-desc">"This always happens. It will never get better."</div>
+      </div>
+      <div class="trap-check">✓</div>
+    </div>
+    <div class="thought-trap" onclick="toggleTrap(this)" data-trap="filtering">
+      <span class="trap-icon">🔦</span>
+      <div>
+        <div class="trap-name">Filtering</div>
+        <div class="trap-desc">"I only see the bad parts and ignore the good."</div>
+      </div>
+      <div class="trap-check">✓</div>
+    </div>
+    <div class="thought-trap" onclick="toggleTrap(this)" data-trap="none">
+      <span class="trap-icon">✅</span>
+      <div>
+        <div class="trap-name">None of these</div>
+        <div class="trap-desc">"My thinking seems fair and balanced."</div>
+      </div>
+      <div class="trap-check">✓</div>
+    </div>
+  </div>
+
+  <button class="btn-primary btn-amber" style="margin-top:16px;" onclick="goTo('screen-reframe')">Now let's talk back to it →</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 6: REFRAME (CBT + WORRY TIME)
+════════════════════════════════════════ -->
+<div class="screen" id="screen-reframe">
+  <div class="app-header">
+    <button class="back-btn" onclick="goTo('screen-cbt')">← Back</button>
+    <span class="step-indicator">Step 6 of 6</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+
+  <h1 class="screen-title">Talk back to the worry</h1>
+  <p class="screen-subtitle">Now write something more helpful and true. You don't have to make it perfect — just a little more balanced.</p>
+
+  <div class="reframe-prompt">
+    <p>Your worry: <strong id="worry-display-reframe">"..."</strong></p>
+  </div>
+
+  <div class="card">
+    <div class="section-label">A more helpful thought is...</div>
+    <textarea class="reframe-input" id="reframe-text" placeholder='e.g. "This feels scary but I have handled hard things before. I can ask for help."'></textarea>
+
+    <div class="section-label" style="margin-top:16px;">Worry Time — schedule it</div>
+    <p style="font-size:13px; color:var(--text-mid); margin-bottom:12px; line-height:1.5;">
+      Research shows that <strong>giving worries a specific time</strong> helps your brain let go of them the rest of the day. Pick a time to think about this worry — and only then.
+    </p>
+    <div class="time-options" id="time-options">
+      <div class="time-option" onclick="selectTime(this, 'After school')">
+        <div class="time-val">🏫</div>
+        <div class="time-label">After school</div>
+      </div>
+      <div class="time-option" onclick="selectTime(this, 'After dinner')">
+        <div class="time-val">🍽️</div>
+        <div class="time-label">After dinner</div>
+      </div>
+      <div class="time-option" onclick="selectTime(this, 'Tomorrow morning')">
+        <div class="time-val">🌅</div>
+        <div class="time-label">Tomorrow morning</div>
+      </div>
+      <div class="time-option" onclick="selectTime(this, 'This weekend')">
+        <div class="time-val">📅</div>
+        <div class="time-label">This weekend</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-primary btn-green" onclick="goToSummary()">See my summary →</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 7: SUMMARY
+════════════════════════════════════════ -->
+<div class="screen" id="screen-summary">
+  <div class="app-header">
+    <span class="app-logo">Brave Feelings Lab</span>
+  </div>
+
+  <h1 class="screen-title">You did it. 🎉</h1>
+  <p class="screen-subtitle">Here's what you worked through today.</p>
+
+  <div class="score-change">
+    <div class="score-box">
+      <div class="score-num before" id="score-before">—</div>
+      <div class="score-lbl">Before</div>
+    </div>
+    <div class="score-arrow">→</div>
+    <div class="score-box">
+      <div class="score-num after" id="score-after">—</div>
+      <div class="score-lbl">After</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="summary-row">
+      <span class="summary-icon">💭</span>
+      <div>
+        <div class="summary-label">My worry</div>
+        <div class="summary-val" id="sum-worry">—</div>
+      </div>
+    </div>
+    <div class="summary-row">
+      <span class="summary-icon">🫀</span>
+      <div>
+        <div class="summary-label">Where I felt it</div>
+        <div class="summary-val" id="sum-body">—</div>
+      </div>
+    </div>
+    <div class="summary-row">
+      <span class="summary-icon">🔍</span>
+      <div>
+        <div class="summary-label">Thinking pattern I spotted</div>
+        <div class="summary-val" id="sum-traps">—</div>
+      </div>
+    </div>
+    <div class="summary-row">
+      <span class="summary-icon">💬</span>
+      <div>
+        <div class="summary-label">My helpful thought</div>
+        <div class="summary-val" id="sum-reframe">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="worrytime-box" id="worrytime-box" style="display:none;">
+    <div class="worrytime-title">⏰ Worry Time Scheduled</div>
+    <div class="worrytime-time" id="sum-worrytime">—</div>
+    <div class="worrytime-note">Until then, when the worry comes back, say: <em>"I've scheduled time for you. I don't need to think about this right now."</em></div>
+  </div>
+
+  <div class="affirmation" id="affirmation-box">
+    <div class="emoji">⭐</div>
+    <p id="affirmation-text">You were brave enough to look at your worry. That is the hardest part — and you did it.</p>
+  </div>
+
+  <button class="btn-primary" onclick="rateAfter()">Rate my worry now →</button>
+  <button class="btn-secondary" onclick="startOver()" style="margin-top:8px;">Start again with a new worry</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 8: AFTER RATING
+════════════════════════════════════════ -->
+<div class="screen" id="screen-after-rate">
+  <div class="app-header">
+    <span class="app-logo">Brave Feelings Lab</span>
+  </div>
+
+  <h1 class="screen-title">How big is it now?</h1>
+  <p class="screen-subtitle">Rate the same worry again after going through the lab.</p>
+
+  <div class="card">
+    <div class="section-label">Worry size now: 0 = tiny · 10 = huge</div>
+    <div class="scale-container">
+      <div class="scale-labels"><span>0 — Tiny</span><span>10 — Huge</span></div>
+      <input type="range" class="scale-input" id="worry-scale-after" min="0" max="10" value="5" oninput="updateScale('after')">
+      <div class="scale-value" id="scale-after-val">5</div>
+      <div class="scale-feeling" id="scale-after-feel">Medium — I notice it</div>
+    </div>
+  </div>
+
+  <button class="btn-primary btn-green" onclick="finishSession()">See my result →</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 9: FINAL RESULT
+════════════════════════════════════════ -->
+<div class="screen" id="screen-result">
+  <div class="app-header">
+    <span class="app-logo">Brave Feelings Lab</span>
+  </div>
+
+  <div class="affirmation">
+    <div class="emoji" id="result-emoji">🌟</div>
+    <p id="result-message">You shrank your worry.</p>
+  </div>
+
+  <div class="score-change">
+    <div class="score-box">
+      <div class="score-num before" id="result-before">—</div>
+      <div class="score-lbl">Before</div>
+    </div>
+    <div class="score-arrow">→</div>
+    <div class="score-box">
+      <div class="score-num after" id="result-after">—</div>
+      <div class="score-lbl">After</div>
+    </div>
+  </div>
+
+  <div class="card card-warm" id="result-note-card">
+    <p style="font-size:14px; color:var(--text-mid); line-height:1.6;" id="result-note"></p>
+  </div>
+
+  <button class="btn-primary" onclick="startOver()">Work on another worry</button>
+  <button class="btn-secondary" onclick="goTo('screen-welcome')" style="margin-top:8px;">Back to start</button>
+</div>
+
+<script>
+// ── STATE ──
+const state = {
+  worry: '',
+  ratingBefore: 5,
+  ratingAfter: 5,
+  bodyParts: [],
+  traps: [],
+  reframe: '',
+  worryTime: ''
+};
+
+// ── NAVIGATION ──
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo(0, 0);
+
+  if (screenId === 'screen-reframe') {
+    const w = state.worry || '(your worry)';
+    document.getElementById('worry-display-reframe').textContent = '"' + w + '"';
+  }
+  if (screenId === 'screen-summary') {
+    buildSummary();
+  }
+}
+
+// ── WORRY ──
+function saveWorry() {
+  const txt = document.getElementById('worry-text').value.trim();
+  if (!txt) {
+    document.getElementById('worry-text').style.borderColor = 'var(--soft-red)';
+    document.getElementById('worry-text').placeholder = 'Please write something — even a few words.';
+    return;
+  }
+  state.worry = txt;
+  goTo('screen-rate');
+}
+
+// ── SCALE ──
+const scaleLabels = [
+  'Tiny — barely there',
+  'Very small — easy to ignore',
+  'Small — I notice it a little',
+  'Smallish — it comes and goes',
+  'Medium — I notice it',
+  'Medium — it takes some energy',
+  'Getting big — hard to ignore',
+  'Big — it bothers me a lot',
+  'Very big — hard to think of other things',
+  'Huge — almost overwhelming',
+  'Maximum — I can only think about this'
+];
+
+function updateScale(which) {
+  if (which === 'before') {
+    const v = document.getElementById('worry-scale-before').value;
+    document.getElementById('scale-before-val').textContent = v;
+    document.getElementById('scale-before-feel').textContent = scaleLabels[v];
+  } else {
+    const v = document.getElementById('worry-scale-after').value;
+    document.getElementById('scale-after-val').textContent = v;
+    document.getElementById('scale-after-feel').textContent = scaleLabels[v];
+  }
+}
+
+function saveRating() {
+  state.ratingBefore = parseInt(document.getElementById('worry-scale-before').value);
+  goTo('screen-body');
+}
+
+// ── BODY PARTS ──
+const bodyFeedback = {
+  head: 'Worry in the head often feels like racing thoughts, headaches, or trouble concentrating.',
+  throat: 'A tight throat is your body\'s way of getting ready to speak up — or stay quiet when something feels unsafe.',
+  chest: 'Chest tightness is one of the most common ways anxiety shows up. It is your heart and lungs reacting to a perceived threat.',
+  stomach: 'Stomach feelings — butterflies, nausea, or pain — are very common with worry. Your gut has its own nervous system.',
+  arms: 'Tense or restless arms can mean your body wants to act or protect itself.',
+  hands: 'Shaky or sweaty hands are a normal nervous system response when we feel threatened.',
+  legs: 'Restless or heavy legs often mean your body wants to run away from the worry.',
+  feet: 'Cold or restless feet can happen when blood flow changes under stress.',
+  nowhere: 'Some people feel worry purely in their thoughts. That is completely normal too.'
+};
+
+function toggleBodyPart(el) {
+  const part = el.dataset.part;
+  el.classList.toggle('selected');
+  if (el.classList.contains('selected')) {
+    if (!state.bodyParts.includes(part)) state.bodyParts.push(part);
+  } else {
+    state.bodyParts = state.bodyParts.filter(p => p !== part);
+  }
+  updateBodyFeedback();
+}
+
+function updateBodyFeedback() {
+  const fb = document.getElementById('body-feedback');
+  const txt = document.getElementById('body-feedback-text');
+  if (state.bodyParts.length === 0) { fb.style.display = 'none'; return; }
+  const last = state.bodyParts[state.bodyParts.length - 1];
+  txt.innerHTML = '<strong>' + last.charAt(0).toUpperCase() + last.slice(1) + ':</strong> ' + (bodyFeedback[last] || '');
+  fb.style.display = 'block';
+}
+
+// ── CBT TRAPS ──
+function toggleTrap(el) {
+  const trap = el.dataset.trap;
+  if (trap === 'none') {
+    document.querySelectorAll('.thought-trap').forEach(t => t.classList.remove('selected'));
+    state.traps = [];
+  } else {
+    document.querySelector('[data-trap="none"]').classList.remove('selected');
+    state.traps = state.traps.filter(t => t !== 'none');
+  }
+  el.classList.toggle('selected');
+  if (el.classList.contains('selected')) {
+    if (!state.traps.includes(trap)) state.traps.push(trap);
+  } else {
+    state.traps = state.traps.filter(t => t !== trap);
+  }
+}
+
+// ── BREATHING ENGINE ──
+let breathInterval = null;
+let breathRound = 0;
+let breathPhase = 0;
+const breathPhases = [
+  { label: 'Breathe IN', class: 'inhale', duration: 4000, circleText: '1…2…3…4' },
+  { label: 'HOLD', class: 'hold', duration: 4000, circleText: 'Hold…' },
+  { label: 'Breathe OUT', class: 'exhale', duration: 4000, circleText: '4…3…2…1' },
+  { label: 'HOLD', class: 'hold', duration: 4000, circleText: 'Hold…' }
+];
+const TOTAL_ROUNDS = 4;
+
+function runBreathing(circleId, textId, instrId, counterId, dotsId, nextBtnId) {
+  if (breathInterval) { clearTimeout(breathInterval); breathInterval = null; }
+  breathRound = 0; breathPhase = 0;
+
+  function nextPhase() {
+    const circle = document.getElementById(circleId);
+    const circleText = document.getElementById(textId);
+    const instr = document.getElementById(instrId);
+    const counter = document.getElementById(counterId);
+    if (!circle) return;
+
+    if (breathPhase === 0 && breathRound > 0) {
+      document.getElementById(dotsId.replace('breath-dots','dot') + '-' + (breathRound-1) ||
+        dotsId.split('-').slice(0,2).join('-') + (dotsId.includes('2') ? '2-' : '-') + (breathRound-1))
+    }
+
+    // Mark dot
+    const dotPrefix = dotsId.includes('-2') ? 'dot2-' : 'dot-';
+    if (breathPhase === 0 && breathRound > 0) {
+      const prevDot = document.getElementById(dotPrefix + (breathRound - 1));
+      if (prevDot) prevDot.classList.add('done');
+    }
+
+    if (breathRound >= TOTAL_ROUNDS) {
+      circle.className = 'breathing-circle';
+      circleText.textContent = 'Done! 🎉';
+      instr.textContent = 'Great job!';
+      counter.textContent = 'All 4 rounds complete';
+      const lastDot = document.getElementById(dotPrefix + (TOTAL_ROUNDS - 1));
+      if (lastDot) lastDot.classList.add('done');
+      if (nextBtnId) {
+        const btn = document.getElementById(nextBtnId);
+        if (btn) btn.style.display = 'block';
+      }
+      return;
+    }
+
+    const phase = breathPhases[breathPhase];
+    circle.className = 'breathing-circle ' + phase.class;
+    circleText.textContent = phase.circleText;
+    instr.textContent = phase.label;
+    counter.textContent = 'Round ' + (breathRound + 1) + ' of ' + TOTAL_ROUNDS;
+
+    breathPhase++;
+    if (breathPhase >= breathPhases.length) {
+      breathPhase = 0;
+      breathRound++;
+    }
+
+    breathInterval = setTimeout(nextPhase, phase.duration);
+  }
+  nextPhase();
+}
+
+function startBreathing() {
+  runBreathing('breath-circle', 'breath-circle-text', 'breath-instruction', 'breath-counter', 'breath-dots', 'breathe-next-btn');
+}
+
+function startBreathing2() {
+  runBreathing('breath-circle-2', 'breath-circle-text-2', 'breath-instruction-2', 'breath-counter-2', 'breath-dots-2', null);
+}
+
+// ── WORRY TIME ──
+let selectedTimeEl = null;
+function selectTime(el, val) {
+  if (selectedTimeEl) selectedTimeEl.classList.remove('selected');
+  el.classList.add('selected');
+  selectedTimeEl = el;
+  state.worryTime = val;
+}
+
+// ── SUMMARY ──
+function goToSummary() {
+  state.reframe = document.getElementById('reframe-text').value.trim();
+  goTo('screen-summary');
+}
+
+const trapNames = {
+  'catastrophizing': 'Catastrophizing',
+  'mind-reading': 'Mind Reading',
+  'all-or-nothing': 'All-or-Nothing Thinking',
+  'overgeneralizing': 'Overgeneralizing',
+  'filtering': 'Filtering (focusing on negatives)',
+  'none': 'No thinking traps — balanced thinking'
+};
+
+function buildSummary() {
+  document.getElementById('sum-worry').textContent = state.worry || '(not entered)';
+  document.getElementById('sum-body').textContent = state.bodyParts.length
+    ? state.bodyParts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')
+    : 'Nowhere in particular';
+  document.getElementById('sum-traps').textContent = state.traps.length
+    ? state.traps.map(t => trapNames[t] || t).join(', ')
+    : 'None selected';
+  document.getElementById('sum-reframe').textContent = state.reframe || '(not entered)';
+  document.getElementById('score-before').textContent = state.ratingBefore;
+  document.getElementById('score-after').textContent = '?';
+
+  if (state.worryTime) {
+    document.getElementById('sum-worrytime').textContent = state.worryTime;
+    document.getElementById('worrytime-box').style.display = 'block';
+  }
+
+  const affirmations = [
+    'You were brave enough to look at your worry. That is the hardest part — and you did it.',
+    'Naming a worry gives you power over it. You just did something really smart.',
+    'Every time you use this tool, you are training your brain to handle hard feelings.',
+    'You did not run away from the worry. You faced it. That is courage.'
+  ];
+  document.getElementById('affirmation-text').textContent = affirmations[Math.floor(Math.random() * affirmations.length)];
+}
+
+function rateAfter() {
+  document.getElementById('worry-scale-after').value = state.ratingBefore;
+  updateScale('after');
+  goTo('screen-after-rate');
+}
+
+function finishSession() {
+  state.ratingAfter = parseInt(document.getElementById('worry-scale-after').value);
+  const diff = state.ratingBefore - state.ratingAfter;
+
+  document.getElementById('result-before').textContent = state.ratingBefore;
+  document.getElementById('result-after').textContent = state.ratingAfter;
+
+  let emoji, message, note;
+  if (diff >= 3) {
+    emoji = '🌟'; message = 'You shrank your worry significantly!';
+    note = 'A drop of ' + diff + ' points is a real result. Your brain and body worked together. Keep using these tools — they get more powerful with practice.';
+  } else if (diff > 0) {
+    emoji = '✅'; message = 'Your worry got a little smaller.';
+    note = 'Even a small drop matters. Some worries take more time. You can come back and work on this one again, or try the breathing tool on its own.';
+  } else if (diff === 0) {
+    emoji = '🤝'; message = 'The number stayed the same — and that is okay.';
+    note = 'Not every worry shrinks immediately. What matters is that you looked at it, named it, and learned something. That always helps, even when the number does not change right away.';
+  } else {
+    emoji = '💙'; message = 'This is a tough one.';
+    note = 'Sometimes working through a worry brings more feelings up before things get better. That is normal. Try the breathing tool again, and consider talking to a trusted adult about this one.';
+  }
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-message').textContent = message;
+  document.getElementById('result-note').textContent = note;
+  goTo('screen-result');
+}
+
+function startOver() {
+  state.worry = ''; state.ratingBefore = 5; state.ratingAfter = 5;
+  state.bodyParts = []; state.traps = []; state.reframe = ''; state.worryTime = '';
+  document.getElementById('worry-text').value = '';
+  document.getElementById('reframe-text').value = '';
+  document.getElementById('worry-scale-before').value = 5;
+  document.querySelectorAll('.body-tag').forEach(t => t.classList.remove('selected'));
+  document.querySelectorAll('.thought-trap').forEach(t => t.classList.remove('selected'));
+  document.querySelectorAll('.time-option').forEach(t => t.classList.remove('selected'));
+  document.querySelectorAll('.breath-dot').forEach(d => d.classList.remove('done'));
+  document.getElementById('breathe-next-btn').style.display = 'none';
+  selectedTimeEl = null;
+  goTo('screen-welcome');
+}
+
+updateScale('before');
+</script>
+</body>
+</html>
